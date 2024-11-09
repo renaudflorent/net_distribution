@@ -1,0 +1,12 @@
+name: net_distribution
+title: net_distribution
+username: renaudflorent
+account: renaudflorent
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13283347
+bundleId: 9337479
+url: https://renaudflorent.shinyapps.io/net_distribution/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

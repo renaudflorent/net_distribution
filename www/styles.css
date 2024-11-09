@@ -1,0 +1,30 @@
+.myOutput {
+    font-size: 22px;
+    width: 350px;
+    background-color: #fff;
+    height: auto;
+    overflow: auto;
+	  border-radius: 15px;
+	  margin-top: 10px;
+	  margin-bottom: 10px;
+}
+#household {
+    font-size: 22px;
+    width: 350px;
+    background-color: #333333;
+    color: #ffffff;
+    height: auto;
+    overflow: auto;
+	  border-radius: 15px;
+	  padding: 10px;
+}
+#Mosquito_net {
+    font-size: 22px;
+    width: 350px;
+    background-color: #333333;
+    color: #ffffff;
+    height: auto;
+    overflow: auto;
+	  border-radius: 15px;
+	  padding: 10px;
+}
