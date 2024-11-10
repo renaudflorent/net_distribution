@@ -26,7 +26,7 @@ library(dplyr)
 # #importing data into data frame
 # data <- dbGetQuery(con, "SELECT * FROM district_list")
 
-data<-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTyFPn7R6izM6nQTjqhCD5Cr9gXsgdyoBUCM-gP2uFZjyv7yaOaDQbsyYHUZw_axn4FmMutJ5WLhCdP/pub?gid=493384898&single=true&output=csv")
+data<-read.csv("./database.csv")
 
 population<- sum(data$net_prvision, na.rm = TRUE)
 
@@ -62,8 +62,9 @@ ui <- page_fillable(
   includeCSS("www/styles.css"),
   layout_column_wrap(
     card(
-      
+      #MINI DASHBOARD
       card_header("Mini Dashboad"),
+      class = "MainCard",
       div(
         div(class="myOutput",verbatimTextOutput("myOutput1")),
         div (verbatimTextOutput("household")),
@@ -74,11 +75,61 @@ ui <- page_fillable(
       card_header("Graph")
     ),
     card(
-      card_header("SImulation")
+      card_header("SImulation"),
+      
+      selectInput("params",label = "Parameter:", choices = list("Polulation growth rate"=1,"Net demande growth rate"=2,"Both")),
+      sliderInput("rate","Rate", min = 0.000, value=0.120,max = 1,000, step = 0.001),
+      layout_column_wrap(
+        card(
+          class = "minicard",
+          height = "10px",
+          textAreaInput("C1","HH (1 to 2 personn"),
+          
+        ),
+        card(
+          textAreaInput("C2","HH (3 to 4 personn"),
+        )
+        ,
+        card(
+          textAreaInput("C3","HH (5 to 6 personn"),
+        ),
+        card(
+          textAreaInput("C4","HH (+ 7 personn"),
+        )
+        
+      ),
+      layout_column_wrap(
+        card(
+          "Mostiquo Net: 25 2545 252"
+        ),
+        card(
+          "Gap: 25 2545"
+        ),
+        width = 300
+      )
+     
+      
     ),
     
     card(
-      card_header("Voting system")
+      card_header("Voting system"),
+      layout_column_wrap(
+        card(
+          textAreaInput("name",label = "Name"),
+          textAreaInput("email",label = "E-mail"),
+          selectInput("scenario",label = "CHoose the scenario which is more appropriate to you",choices = list("Scenario 1"=1,"Scenario 2"=2,"Scenario 3"=3, "Scenario 4"=4)),
+          textAreaInput("reason", label="Tell us why"),
+          actionButton("submit","Submit")
+        ),
+        card(
+          #let presente the result in pie chart
+          card_header("vote result")
+        ),
+      ),
+      
+      width="300px"
+      
+      
     ),
     width = "900px" 
   )

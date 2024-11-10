@@ -28,3 +28,65 @@
 	  border-radius: 15px;
 	  padding: 10px;
 }
+#submit {
+    font-size: 20px;
+    width: 100px;
+    background-color: #077936;
+    color: #ffffff;
+    height: auto;
+    overflow: auto;
+	  border-radius: 15px;
+	  padding: 10px;
+}
+#name {
+    font-size: 20px;
+    width: 350px;
+    color: #333333;
+    height: 50px;
+    overflow: auto;
+	  border-radius: 5px;
+	  padding: 10px;
+}
+#email {
+    font-size: 20px;
+    width: 350px;
+    color: #333333;
+    height: 50px;
+    overflow: auto;
+	  border-radius: 5px;
+	  padding: 10px;
+}
+#reason {
+    font-size: 20px;
+    width: 350px;
+    color: #333333;
+    height: 100px;
+    overflow: auto;
+	  border-radius: 5px;
+	  padding: 10px;
+}
+.minicard {
+    font-size: 15px;
+    width: 220px;
+    color: #333333;
+    overflow: auto;
+	  border-radius: 5px;
+	  padding: 10px;
+}
+#C1 {
+    font-size: 10px;
+    width: 100px;
+    color: #333333;
+    height: 50px;
+    overflow: auto;
+	  border-radius: 5px;
+	  padding: 10px;
+}
+.MainCard{
+  font-size: 30px;
+    color: #077936;
+    overflow: auto;
+	  border-radius: 5px;
+	  padding: 10px;
+}
+
