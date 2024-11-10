@@ -57,22 +57,45 @@ print(conclusion)
 
 #SHINY APP
 # Define UI for the application
-ui <- page_fillable(
+ui <- page_fluid(
   title = "Net Distribution",
   includeCSS("www/styles.css"),
   layout_column_wrap(
     card(
       #MINI DASHBOARD
       card_header("Mini Dashboad"),
-      class = "MainCard",
+      layout_column_wrap(
+        div(
+          style = "height: 100px;",
+          selectizeInput(
+            inputId = "selected_item_region",      # Unique ID for the input
+            label = "Select Region:",  
+            choices = data$Region,
+            selected = NULL,                
+            options = list(placeholder = 'Type to search...')
+          ),
+          actionButton("reInit","Clear"),
+        )
+      ),
+      
+      
       div(
         div(class="myOutput",verbatimTextOutput("myOutput1")),
         div (verbatimTextOutput("household")),
         div(verbatimTextOutput("Mosquito_net"))
-      )
+      ),
+      
     ),
     card(
-      card_header("Graph")
+      card_header("Graph"),
+      div(
+        class = "card",
+        style = "height: 400px;",  # Specify the card's height
+        div(class = "card-body",
+            h4(class = "card-title", "Card Title"),
+            p(class = "card-text", "This is the content inside the card.")
+        )
+      )
     ),
     card(
       card_header("SImulation"),
@@ -80,22 +103,35 @@ ui <- page_fillable(
       selectInput("params",label = "Parameter:", choices = list("Polulation growth rate"=1,"Net demande growth rate"=2,"Both")),
       sliderInput("rate","Rate", min = 0.000, value=0.120,max = 1,000, step = 0.001),
       layout_column_wrap(
-        card(
-          class = "minicard",
-          height = "10px",
-          textAreaInput("C1","HH (1 to 2 personn"),
-          
+        
+        div(
+          class = "card",
+          style = "height: 100px;",  # Specify the card's height
+          div(class = "miniCard",
+              textAreaInput("C1","Net ->HH (1 to 2 personn"),
+          )
         ),
-        card(
-          textAreaInput("C2","HH (3 to 4 personn"),
-        )
-        ,
-        card(
-          textAreaInput("C3","HH (5 to 6 personn"),
+        div(
+          class = "card",
+          style = "height: 100px;",  # Specify the card's height
+          div(class = "miniCard",
+              textAreaInput("C2","Net ->HH (3 to 4 personn"),
+          )
         ),
-        card(
-          textAreaInput("C4","HH (+ 7 personn"),
-        )
+        div(
+          class = "card",
+          style = "height: 100px;",  # Specify the card's height
+          div(class = "miniCard",
+              textAreaInput("C3","Net ->HH (5 to 6 personn"),
+          )
+        ),
+        div(
+          class = "card",
+          style = "height: 100px;",  # Specify the card's height
+          div(class = "miniCard",
+              textAreaInput("C4","Net ->HH (+7 personn"),
+          )
+        ),
         
       ),
       layout_column_wrap(
@@ -135,11 +171,48 @@ ui <- page_fillable(
   )
 )
 
+
+
 # Define server logic
 server <- function(input, output, session) {
-  output$myOutput1 <- renderText({ paste("Population:", format(population, big.mark = " ", scientific = FALSE)) })
-  output$household <- renderText({ paste("Household:", format(sum(data$household_number_projection, na.rm = TRUE),big.mark=" ",scientific = FALSE)) })
-  output$Mosquito_net <- renderText({ paste("Net Demand:", format(sum(data$net_demande, na.rm = TRUE),big.mark=" ",scientific = FALSE)) })
+  
+  population <- reactiveVal(sum(data$Population_survey, na.rm = TRUE))
+  household <- reactiveVal(sum(data$Household_survey, na.rm = TRUE))
+  netDemand <- reactiveVal(sum(data$net_demande, na.rm = TRUE))
+  
+  output$myOutput1 <- renderText({ paste("Population:", format(population(), big.mark = " ", scientific = FALSE)) })
+  output$household <- renderText({ paste("Household:", format(household(),big.mark=" ",scientific = FALSE)) })
+  output$Mosquito_net <- renderText({ paste("Net Demand:", format(netDemand(),big.mark=" ",scientific = FALSE)) })
+  
+  observeEvent(input$reInit, {
+    updateSelectizeInput(session, "selected_item_region", selected = "")
+    new_population <- sum(data$Population_survey, na.rm = TRUE)
+    new_hh <- sum(data$Household_survey, na.rm = TRUE)
+    new_netDemand <- sum(data$net_demande, na.rm = TRUE)
+  
+  })
+  
+  observeEvent(input$selected_item_region, {
+    selected_region <- input$selected_item_region
+    if (is.null(selected_region) || selected_region == ""){
+      new_population <- sum(data$Population_survey, na.rm = TRUE)
+      new_hh <- sum(data$Household_survey, na.rm = TRUE)
+      new_netDemand <- sum(data$net_demande, na.rm = TRUE)
+      
+    } else{
+      new_population <- sum(data$Population_survey[data$Region == selected_region], na.rm = TRUE)
+      new_hh <- sum(data$Household_survey[data$Region == selected_region], na.rm = TRUE)
+      new_netDemand <- sum(data$net_demande[data$Region == selected_region], na.rm = TRUE)
+    }
+    
+    # Update population based on the selected region
+    
+    population(new_population)  # Update the reactive value
+    household(new_hh)
+    netDemand(new_netDemand)
+    
+  
+  })
 }
 
 # Run the application 
