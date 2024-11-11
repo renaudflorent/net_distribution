@@ -5,7 +5,7 @@ account: renaudflorent
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 13283347
-bundleId: 9341660
+bundleId: 9344247
 url: https://renaudflorent.shinyapps.io/net_distribution/
 version: 1
 asMultiple: FALSE

@@ -71,7 +71,7 @@ print(conclusion)
 ui <- page_fluid(
   title = "Net Distribution",
   includeCSS("www/styles.css"),
-  layout_column_wrap(
+  layout_columns(
     card(
       #MINI DASHBOARD
       card_header("Mini Dashboad"),
@@ -227,7 +227,7 @@ ui <- page_fluid(
       
       
     ),
-    width = "900px" 
+    col_widths = c(6, 6),
   )
 )
 
