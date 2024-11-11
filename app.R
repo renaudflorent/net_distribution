@@ -53,7 +53,7 @@ tcd_population<-data|>
 
 
 
-#graphe: 1 histrogram to show
+
 result<-t.test(data$populatoin_projection, data$Population_survey,paired = TRUE, conf.level = 0.95)
 
 #conclusion
@@ -67,7 +67,7 @@ print(conclusion)
 
 
 #SHINY APP
-# Define UI for the application
+
 ui <- page_fluid(
   title = "Net Distribution",
   includeCSS("www/styles.css"),
@@ -81,7 +81,7 @@ ui <- page_fluid(
         div(
           div(
             selectizeInput(
-              inputId = "selected_item_region",      # Unique ID for the input
+              inputId = "selected_item_region",      
               label = "Select Region:",  
               choices = data$Region,
               selected = NULL,                
@@ -96,7 +96,6 @@ ui <- page_fluid(
         ),
         div(
           clsss="card",
-          #id="tesResult",
           verbatimTextOutput("tesResult")
         )
         
@@ -147,7 +146,7 @@ ui <- page_fluid(
       card_header("Graph"),
       div(
         class = "card",
-        style = "height: 500px;",  # Specify the card's height
+        style = "height: 500px;",  
         div(
           class = "card-body",
           h4(class = "card-title", "Graph"),
@@ -163,25 +162,25 @@ ui <- page_fluid(
       layout_column_wrap(
         
         div(
-          style = "height: 50px;",  # Specify the card's height
+          style = "height: 50px;",  
           div(class = "miniCard",
               textAreaInput("C1","Net ->HH (1 to 2 personn",value=1),
           )
         ),
         div(
-          style = "height: 50px;",  # Specify the card's height
+          style = "height: 50px;",  
           div(class = "miniCard",
               textAreaInput("C2","Net ->HH (3 to 4 personn",value=2),
           )
         ),
         div(
-          style = "height: 50px;",  # Specify the card's height
+          style = "height: 50px;",  
           div(class = "miniCard",
               textAreaInput("C3","Net ->HH (5 to 6 personn",value=3),
           )
         ),
         div(
-          style = "height: 50px",  # Specify the card's height
+          style = "height: 50px",  
           div(class = "miniCard",
               textAreaInput("C4","Net ->HH (+7 personn",value=4),
           )
@@ -217,7 +216,7 @@ ui <- page_fluid(
           actionButton("submit","Submit")
         ),
         card(
-          #let presente the result in pie chart
+     
           plotOutput("pie")
           
         ),
@@ -233,7 +232,6 @@ ui <- page_fluid(
 
 
 
-# Define server logic
 server <- function(input, output, session) {
   des=""
   population <- reactiveVal(sum(data$Population_survey, na.rm = TRUE))
@@ -555,13 +553,13 @@ server <- function(input, output, session) {
     ggplot(vote_count, aes(x = "", y = count, fill = scenario)) +
       geom_col(width = 1, color = "white") +
       coord_polar(theta = "y") +
-      theme_void() +  # Remove unnecessary axes
+      theme_void() +  
       labs(title = "Votes by Scenario") +
       geom_text(
         aes(label = paste0(round(percentage, 1), "%")),
         position = position_stack(vjust = 0.5),
         color = "#FFFFFF",
-        size = 5  # Adjust size as needed
+        size = 5  
       ) +
       scale_fill_manual(
         values = c("#077936", "#0000FF", "#333333"),
@@ -589,5 +587,4 @@ server <- function(input, output, session) {
   
 }
 
-# Run the application 
 shinyApp(ui = ui, server = server)
