@@ -94,10 +94,10 @@
 }*/
 .MainCard{
   font-size: 30px;
-    color: #077936;
-    overflow: auto;
-	  border-radius: 5px;
-	  padding: 10px;
+  color: #077936;
+  overflow: auto;
+	border-radius: 5px;
+	padding: 10px;
 }
 #tesResult{
   height:130px;

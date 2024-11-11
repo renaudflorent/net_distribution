@@ -163,29 +163,25 @@ ui <- page_fluid(
       layout_column_wrap(
         
         div(
-          class = "card",
-          style = "height: 100px;",  # Specify the card's height
+          style = "height: 50px;",  # Specify the card's height
           div(class = "miniCard",
               textAreaInput("C1","Net ->HH (1 to 2 personn",value=1),
           )
         ),
         div(
-          class = "card",
-          style = "height: 100px;",  # Specify the card's height
+          style = "height: 50px;",  # Specify the card's height
           div(class = "miniCard",
               textAreaInput("C2","Net ->HH (3 to 4 personn",value=2),
           )
         ),
         div(
-          class = "card",
-          style = "height: 100px;",  # Specify the card's height
+          style = "height: 50px;",  # Specify the card's height
           div(class = "miniCard",
               textAreaInput("C3","Net ->HH (5 to 6 personn",value=3),
           )
         ),
         div(
-          class = "card",
-          style = "height: 100px",  # Specify the card's height
+          style = "height: 50px",  # Specify the card's height
           div(class = "miniCard",
               textAreaInput("C4","Net ->HH (+7 personn",value=4),
           )
@@ -567,7 +563,10 @@ server <- function(input, output, session) {
         color = "#FFFFFF",
         size = 5  # Adjust size as needed
       ) +
-      scale_fill_manual(values = c("#077936", "#0000FF", "#333333")) 
+      scale_fill_manual(
+        values = c("#077936", "#0000FF", "#333333"),
+        labels = c("Scenario 1", "Scenario 2", "Scenario 3")
+      )
   })
   
   output$hist<-renderPlot({
