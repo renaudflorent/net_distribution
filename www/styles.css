@@ -38,6 +38,16 @@
 	  border-radius: 15px;
 	  padding: 10px;
 }
+#reInit {
+    font-size: 20px;
+    width: 100px;
+    background-color: #077936;
+    color: #ffffff;
+    height: auto;
+    overflow: auto;
+	  border-radius: 15px;
+	  padding: 10px;
+}
 #name {
     font-size: 20px;
     width: 350px;
@@ -89,4 +99,9 @@
 	  border-radius: 5px;
 	  padding: 10px;
 }
-
+#tesResult{
+  height:130px;
+}
+#desciption{
+  height:110px;
+}

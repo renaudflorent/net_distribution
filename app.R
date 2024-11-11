@@ -58,9 +58,9 @@ result<-t.test(data$populatoin_projection, data$Population_survey,paired = TRUE,
 
 #conclusion
 if (result$p.value < 0.05) {
-  conclusion <- "Reject the null hypothesis: There is a significant difference between the projection and obeserved values."
+  conclusion <- "\n Reject the null hypothesis: There is a \n significant difference between the population projection and \n obeserved  values."
 } else {
-  conclusion <- "Fail to reject the null hypothesis: \n There is no significant difference between the projection and obeserved values."
+  conclusion <- "\n Fail to reject the null hypothesis:  There is \n no significant difference between the population  \n projection  and obeserved values."
 }
 
 print(conclusion)
@@ -96,6 +96,7 @@ ui <- page_fluid(
         ),
         div(
           clsss="card",
+          #id="tesResult",
           verbatimTextOutput("tesResult")
         )
         
@@ -105,7 +106,7 @@ ui <- page_fluid(
       layout_column_wrap(
         width = 1/3,
         div(
-          style="margin-top:200px",
+          style="margin-top:20px",
           div(
             verbatimTextOutput("population")
             ),
@@ -117,7 +118,7 @@ ui <- page_fluid(
         ),
 
         div(
-          style="margin-top:200px",
+          style="margin-top:20px",
           div(
             verbatimTextOutput("household")
           ),
@@ -127,7 +128,7 @@ ui <- page_fluid(
           )
         ),
         div(
-          style="margin-top:200px",
+          style="margin-top:20px",
           div(
             verbatimTextOutput("Mosquito_net")
           ),
@@ -146,10 +147,11 @@ ui <- page_fluid(
       card_header("Graph"),
       div(
         class = "card",
-        style = "height: 400px;",  # Specify the card's height
-        div(class = "card-body",
-            h4(class = "card-title", "Card Title"),
-            p(class = "card-text", "This is the content inside the card.")
+        style = "height: 500px;",  # Specify the card's height
+        div(
+          class = "card-body",
+          h4(class = "card-title", "Graph"),
+          plotOutput("hist")
         )
       )
     ),
@@ -220,7 +222,6 @@ ui <- page_fluid(
         ),
         card(
           #let presente the result in pie chart
-          card_header("vote result"),
           plotOutput("pie")
           
         ),
@@ -251,25 +252,25 @@ server <- function(input, output, session) {
   output$Mosquito_net <- renderText({ paste("Net Demand:", format(netDemand(),big.mark=" ",scientific = FALSE)) })
   output$net_updated <- renderText({ paste("Net Demand Update:", format(netDemand_update(),big.mark=" ",scientific = FALSE)) })
   output$net_gap <- renderText({ paste("GAP/Surplus:", format(sum(data$net_prvision,na.rm = TRUE)-net_gap(),big.mark=" ",scientific = FALSE)) })
-  output$desciption <- renderText({ paste("Description:",des_val())})
+  output$desciption <- renderText({ paste("Description:",des_val(), collapse = "\n")})
   
   
   observeEvent(input$scenario ,{
     print(input$scenario)
     if(input$scenario=="A"){
-      des="Population grouth rate more than 4% (Rate>4%) => Net for type of HH: 1,2,2,3"
+      des="\n Population grouth rate more than \n 4% (Rate>4%) => Net for type of HH: 1,2,2,3"
       des_val(des)
     }else if(input$scenario=="B"){
-      des="Net demande grouth rate more than 14% (Rate>14%) => Net for type of HH: 1,2,2,3"
+      des="\n Net demande grouth rate more than \n 14%  (Rate>14%) => Net for type of \n HH: 1,2,2,3"
       des_val(des)
     }else if (input$scenario=="C"){
-      des="Net demande grouth rate and Population grouth rate more than 4% (Rate>4%) => Net for type of HH: 1,2,2,3"
+      des="\n Net demande grouth rate and Population \n grouth rate more than 4% (Rate>4%) => \n Net for type of  HH: 1,2,2,3"
       des_val(des)
     }
     print(des)
   })
   
-  output$tesResult<- renderText({paste(conclusion)})
+  output$tesResult <-  renderText({ paste("T-Test CONCLUSION:",conclusion ,collapse = "\n")})
   
   observeEvent(input$reInit, {
     updateSelectizeInput(session, "selected_item_region", selected = "")
@@ -388,47 +389,6 @@ server <- function(input, output, session) {
       )
   })
   
-  output$donnatNet <- renderPlot({
-    selected_region <- input$selected_item_region
-    
-    # Filter data based on the selected region or take all data if null
-    if (is.null(selected_region) || selected_region == "") {
-      prevision <- sum(data$net_prvision, na.rm = TRUE)
-      net_real <- sum(data$net_demande, na.rm = TRUE)
-    } else {
-      region_data <- data %>% filter(Region == selected_region)
-      prevision <- sum(region_data$net_prvision, na.rm = TRUE)
-      net_real <- sum(region_data$net_demande, na.rm = TRUE)
-    }
-    
-    # Calculate percentage change
-    if (prevision == 0) {
-      pourcentil <- 0
-    } else {
-      pourcentil <- ((net_real - prevision) / prevision) * 100
-    }
-    
-    
-    # Prepare data for the donut chart
-    data_pop_donnat <- data.frame(
-      category = c("Filled", "Empty"),
-      value = c(pourcentil, 100 - pourcentil)
-    )
-    
-    # Plot the donut chart
-    ggplot(data_pop_donnat, aes(x = 2, y = value, fill = category)) +
-      geom_col(width = 1, color = "white") +
-      coord_polar(theta = "y") +
-      xlim(0.5, 2.5) +  # Create a hole for the donut
-      scale_fill_manual(values = c("Filled" = "#87CEEB", "Empty" = "#F0F0F0")) +  # Custom colors
-      theme_void() +  # Remove axes and gridlines
-      theme(legend.position = "none") +  # Remove legend
-      # Add text in the center with the calculated percentage
-      annotate(
-        "text", x = 0.5, y = 0, label = ifelse(is.finite(pourcentil), paste0(round(pourcentil, 1), "%"), "N/A"),
-        size = 12, color = "#000000", fontface = "bold"
-      )
-  })
   
   observeEvent(input$rate,{
     #DATA WRANGLING
@@ -542,6 +502,51 @@ server <- function(input, output, session) {
     # Optional: Keep the connection open if needed
     # dbDisconnect(con)
   })
+  
+  #ALL plot
+  
+  output$donnatNet <- renderPlot({
+    selected_region <- input$selected_item_region
+    
+    # Filter data based on the selected region or take all data if null
+    if (is.null(selected_region) || selected_region == "") {
+      prevision <- sum(data$net_prvision, na.rm = TRUE)
+      net_real <- sum(data$net_demande, na.rm = TRUE)
+    } else {
+      region_data <- data %>% filter(Region == selected_region)
+      prevision <- sum(region_data$net_prvision, na.rm = TRUE)
+      net_real <- sum(region_data$net_demande, na.rm = TRUE)
+    }
+    
+    # Calculate percentage change
+    if (prevision == 0) {
+      pourcentil <- 0
+    } else {
+      pourcentil <- ((net_real - prevision) / prevision) * 100
+    }
+    
+    
+    # Prepare data for the donut chart
+    data_pop_donnat <- data.frame(
+      category = c("Filled", "Empty"),
+      value = c(pourcentil, 100 - pourcentil)
+    )
+    
+    # Plot the donut chart
+    ggplot(data_pop_donnat, aes(x = 2, y = value, fill = category)) +
+      geom_col(width = 1, color = "white") +
+      coord_polar(theta = "y") +
+      xlim(0.5, 2.5) +  # Create a hole for the donut
+      scale_fill_manual(values = c("Filled" = "#87CEEB", "Empty" = "#F0F0F0")) +  # Custom colors
+      theme_void() +  # Remove axes and gridlines
+      theme(legend.position = "none") +  # Remove legend
+      # Add text in the center with the calculated percentage
+      annotate(
+        "text", x = 0.5, y = 0, label = ifelse(is.finite(pourcentil), paste0(round(pourcentil, 1), "%"), "N/A"),
+        size = 12, color = "#000000", fontface = "bold"
+      )
+  })
+  
   output$pie <- renderPlot({
     
     vote_result <- dbGetQuery(con, "SELECT * FROM vote")
@@ -563,6 +568,24 @@ server <- function(input, output, session) {
         size = 5  # Adjust size as needed
       ) +
       scale_fill_manual(values = c("#077936", "#0000FF", "#333333")) 
+  })
+  
+  output$hist<-renderPlot({
+    gh<-data|>
+      group_by(Region)|>
+      summarise(
+        population_real=sum(Population_survey),
+      )
+    ggplot(gh, aes(x = Region, y = population_real)) +
+      geom_col() +  # Use geom_col() to create a bar plot for categorical data
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+      labs(
+        title = "Population by Region",
+        x = "Region",
+        y = "Population"
+      ) +
+      scale_fill_brewer(palette = "Set3")
   })
   
 }
