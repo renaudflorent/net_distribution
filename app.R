@@ -110,7 +110,6 @@ ui <- page_fluid(
             verbatimTextOutput("population")
             ),
           div(
-
             plotOutput("donnatPopulation")
           )
 
@@ -189,14 +188,20 @@ ui <- page_fluid(
       ),
       layout_column_wrap(
         div(
-          verbatimTextOutput("net_updated")
-        ),
-        div(
-          verbatimTextOutput("net_gap")
-        ),
-        width = 300
-      )
-     
+          style="margin-top:25px;display:flex-box;justify-content:space-between",
+          div(
+            verbatimTextOutput("net_updated")
+          ),
+          div(
+            verbatimTextOutput("net_gap")
+          ),
+          width = 300
+        )
+        
+      ),
+      div(
+        plotOutput("coverage")
+      ),
       
     ),
     
@@ -583,6 +588,117 @@ server <- function(input, output, session) {
         y = "Population"
       ) +
       scale_fill_brewer(palette = "Set3")
+  })
+  
+  output$coverage<-renderPlot({
+    
+    #coverage definition: coverage = #net/population. it's preferable that its value must be close as possible to 1.8
+    #DATA WRANGLING : calculate the coverage per District, and classify them to I.less than 1.40, II.between 1.41 and 1.80, III.between 1.81 and 2.00
+    #IV.between 2.01 and 2.3 and V. more than 2.31
+    
+    #in simulator, we would like to maximize District with Third class (between 1.81 and 2.00)
+    
+    cv<-data|>
+      group_by(District)|>
+      summarise(
+        population_prev=sum(populatoin_projection,na.rm = TRUE),
+        population_real=sum(Population_survey,na.rm = TRUE),
+        net_prev=sum(net_prvision,na.rm = TRUE),
+        net_real=sum(net_demande,na.rm = TRUE),
+        cat1=sum(Cat.1,na.rm = TRUE),
+        cat2=sum(Cat.2,na.rm = TRUE),
+        cat3=sum(Cat.3,na.rm = TRUE),
+        cat4=sum(Cat.4,na.rm = TRUE),
+        coverage=sum(population_real, na.rm = TRUE)/sum(net_demande, na.rm = TRUE),
+      )|>
+      mutate(
+        param1=((population_real-population_prev)/population_prev)*100,
+        param2=((net_real-net_prev)/net_prev)*100,
+        classCoverage = case_when(
+          coverage < 1.40 ~ "less than 1.40",
+          coverage >= 1.41 & coverage <= 1.80 ~ "1.41 to 1.80",
+          coverage >= 1.81 & coverage <= 2.00 ~ "1.81 to 2.00",
+          coverage >= 2.01 & coverage <= 2.30 ~ "2.01 to 2.30",
+          coverage > 2.31 ~ "more than 2.31"
+        )
+      )
+    
+    
+    param <- input$params
+    
+    if(param==1){
+      #Let now caculate net need base on cat value
+      c1<-as.numeric(input$C1)
+      c2<-as.numeric(input$C2)
+      c3<-as.numeric(input$C3)
+      c4<-as.numeric(input$C4)
+      cvr <- cv |>
+        mutate(
+          newnet = case_when(
+            param1 > input$rate ~ (c1 * cat1 + c2 * cat2 + c3 * cat3 + c4 * cat4),
+            TRUE ~ net_real
+          ),
+          newCovrage=population_real/newnet,
+          NewclassCoverage = case_when(
+            newCovrage < 1.40 ~ "less than 1.40",
+            newCovrage >= 1.41 & newCovrage <= 1.80 ~ "1.41 to 1.80",
+            newCovrage >= 1.81 & newCovrage <= 2.00 ~ "1.81 to 2.00",
+            newCovrage >= 2.01 & newCovrage <= 2.30 ~ "2.01 to 2.30",
+            newCovrage > 2.31 ~ "more than 2.31"
+          )
+        )
+      
+      
+    }else if (param==2){
+      c1<-as.numeric(input$C1)
+      c2<-as.numeric(input$C2)
+      c3<-as.numeric(input$C3)
+      c4<-as.numeric(input$C4)
+      cvr <- cv |>
+        mutate(
+          newnet = case_when(
+            param2 > input$rate ~ (c1 * cat1 + c2 * cat2 + c3 * cat3 + c4 * cat4),
+            TRUE ~ net_real
+          ),
+          newCovrage=population_real/newnet,
+          NewclassCoverage = case_when(
+            newCovrage < 1.40 ~ "less than 1.40",
+            newCovrage >= 1.41 & newCovrage <= 1.80 ~ "1.41 to 1.80",
+            newCovrage >= 1.81 & newCovrage <= 2.00 ~ "1.81 to 2.00",
+            newCovrage >= 2.01 & newCovrage <= 2.30 ~ "2.01 to 2.30",
+            newCovrage > 2.31 ~ "more than 2.31"
+          )
+        )
+    
+    } else{
+      c1<-as.numeric(input$C1)
+      c2<-as.numeric(input$C2)
+      c3<-as.numeric(input$C3)
+      c4<-as.numeric(input$C4)
+      cvr <- cv |>
+        mutate(
+          newnet = case_when(
+            (param1 > input$rate & param2 > input$rate)~ (c1 * cat1 + c2 * cat2 + c3 * cat3 + c4 * cat4),
+            TRUE ~ net_real
+          ),
+          newCovrage=population_real/newnet,
+          NewclassCoverage = case_when(
+            newCovrage < 1.40 ~ "less than 1.40",
+            newCovrage >= 1.41 & newCovrage <= 1.80 ~ "1.41 to 1.80",
+            newCovrage >= 1.81 & newCovrage <= 2.00 ~ "1.81 to 2.00",
+            newCovrage >= 2.01 & newCovrage <= 2.30 ~ "2.01 to 2.30",
+            newCovrage > 2.31 ~ "more than 2.31"
+          )
+        )
+    }
+    
+    ggplot(cvr, aes(x = NewclassCoverage)) +
+      geom_bar(fill = 'steelblue') +
+      coord_flip() +  # Flips the axes to put categories on the y-axis
+      theme_minimal() +
+      labs(title = "Bar Plot with Categorical Variable on Y-axis",
+           x = "Category",
+           y = "Count")
   })
   
 }
