@@ -188,7 +188,7 @@ ui <- page_fluid(
       ),
       layout_column_wrap(
         div(
-          style="margin-top:25px;display:flex-box;justify-content:space-between",
+          style="margin-top:25px;display:flex;justify-content:space-between",
           div(
             verbatimTextOutput("net_updated")
           ),
@@ -696,7 +696,7 @@ server <- function(input, output, session) {
       geom_bar(fill = 'steelblue') +
       coord_flip() +  # Flips the axes to put categories on the y-axis
       theme_minimal() +
-      labs(title = "Bar Plot with Categorical Variable on Y-axis",
+      labs(title = "Covrage distribution",
            x = "Category",
            y = "Count")
   })
