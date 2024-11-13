@@ -693,7 +693,7 @@ server <- function(input, output, session) {
     }
     
     ggplot(cvr, aes(x = NewclassCoverage)) +
-      geom_bar(fill = 'steelblue') +
+      geom_bar(fill = 'steelblue', na.rm = TRUE) +
       coord_flip() +  # Flips the axes to put categories on the y-axis
       theme_minimal() +
       labs(title = "Covrage distribution",
